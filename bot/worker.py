@@ -6,6 +6,7 @@ import time
 from .FastTelethon import download_file, upload_file
 from .funcn import *
 from .config import *
+from bot.Shotren import *
 
 
 async def stats(e):
