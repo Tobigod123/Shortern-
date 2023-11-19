@@ -2,6 +2,7 @@
 
 from .worker import *
 from datetime import datetime
+from bot.Shotren import *
 
 START_TIME = datetime.now()
 
