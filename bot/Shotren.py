@@ -1,17 +1,23 @@
 import requests
 import random
 import base64
+import string
 from urllib.parse import quote
 from urllib3 import disable_warnings
 
 SHORTENER = "https://atglinks.com/"
 SHORTENER_API = "498ee7efdd27b59fa6436070a5a3eb28d1a39e80"
 
+def generate_random_string(length=8):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
 
 def short_url(longurl):
     disable_warnings()
-    return requests.get(f'{SHORTENER}api?api={SHORTENER_API}&url={longurl}&format=text').text  
-  
+    random_string = generate_random_string()
+    short_url = f'{SHORTENER}{random_string}'
+    return requests.get(f'{short_url}api?api={SHORTENER_API}&url={longurl}&format=text').text
+
 def checking_access(user_id, button=None):
     if not config_dict['TOKEN_TIMEOUT']:
         return None, button
