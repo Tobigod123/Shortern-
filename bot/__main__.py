@@ -8,6 +8,7 @@ from .config import *
 from .worker import *
 from .devtools import *
 from .FastTelethon import *
+from time import time
 LOGS.info("Starting...")
 
 try:
@@ -19,18 +20,98 @@ except Exception as er:
 ####### GENERAL CMDS ########
 
 @bot.on(events.NewMessage(pattern="/start"))
-async def _(e):
-    if str(e.sender_id) not in OWNER and e.sender_id !=DEV:
-        return e.reply("**Sorry You're not An Authorised User!**")
-    await start(e)
+async def start(_, message):
+    if len(message.command) > 1:
+        userid = message.from_user.id
+        input_token = message.command[1]
 
+        # Check if the user is registered
+        if userid not in user_data:
+            return await sendMessage(message, 'Who are you?')
+
+        data = user_data[userid]
+
+        # Check if the token is valid
+        if 'token' not in data or data['token'] != input_token or is_token_expired(data['time']):
+            return await sendMessage(message, 'This is a token already expired or invalid. Please generate a new one.')
+
+        # Refresh the token and update the time
+        data['token'] = str(uuid4())
+        data['time'] = time()
+        user_data[userid].update(data)
+
+        return await sendMessage(message, 'Token refreshed successfully!')
+    
+    elif config_dict['DM_MODE']:
+        start_string = 'Bot Started.\n' \
+            'Now you can change settings and encode.\n'
+    else:
+        start_string = '🌹 Welcome To One Of A Modified zenith encode bot\n' \
+            'This bot can encode your videos and you can change the FFMPEG settings !\n' \
+            '👨🏽‍💻 Powered By: "https://t.me/AnimeZenith"'
+
+    await sendMessage(message, start_string)
+
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 @bot.on(events.NewMessage(pattern="/setcode"))
 async def _(e):
     if str(e.sender_id) not in OWNER and e.sender_id !=DEV:
         return e.reply("**Sorry You're not An Authorised User!**")
     await coding(e)
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
 
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 @bot.on(events.NewMessage(pattern="/getcode"))
 async def _(e):
@@ -38,6 +119,33 @@ async def _(e):
         return e.reply("**Sorry You're not An Authorised User!**")
     await getcode(e)
 
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 @bot.on(events.NewMessage(pattern="/showthumb"))
 async def _(e):
@@ -45,6 +153,33 @@ async def _(e):
         return e.reply("**Sorry You're not An Authorised User!**")
     await getthumb(e)
 
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 @bot.on(events.NewMessage(pattern="/logs"))
 async def _(e):
@@ -52,12 +187,67 @@ async def _(e):
         return e.reply("**Sorry You're not An Authorised User!**")
     await getlogs(e)
 
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 @bot.on(events.NewMessage(pattern="/cmds"))
 async def _(e):
     if str(e.sender_id) not in OWNER and e.sender_id !=DEV:
         return e.reply("**Sorry You're not An Authorised User!**")
     await zylern(e)
+    
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 
 @bot.on(events.NewMessage(pattern="/ping"))
@@ -65,7 +255,34 @@ async def _(e):
     if str(e.sender_id) not in OWNER and e.sender_id !=DEV:
         return e.reply("**Sorry You're not An Authorised User!**")
     await up(e)
+    
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
 
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 @bot.on(events.NewMessage(pattern="/sysinfo"))
 async def _(e):
@@ -73,6 +290,33 @@ async def _(e):
         return e.reply("**Sorry You're not An Authorised User!**")
     await sysinfo(e)
 
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 @bot.on(events.NewMessage(pattern="/leech"))
 async def _(e):
@@ -80,12 +324,67 @@ async def _(e):
         return e.reply("**Sorry You're not An Authorised User!**")
     await dl_link(e)
 
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 @bot.on(events.NewMessage(pattern="/help"))
 async def _(e):
     if str(e.sender_id) not in OWNER and e.sender_id !=DEV:
         return e.reply("**Sorry You're not An Authorised User!**")
     await ihelp(e)
+    
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 
 @bot.on(events.NewMessage(pattern="/renew"))
@@ -93,6 +392,34 @@ async def _(e):
     if str(e.sender_id) not in OWNER and e.sender_id !=DEV:
         return e.reply("**Sorry You're not An Authorised User!**")
     await renew(e)
+    
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 
 @bot.on(events.NewMessage(pattern="/clear"))
@@ -101,6 +428,33 @@ async def _(e):
         return e.reply("**Sorry You're not An Authorised User!**")
     await clearqueue(e)
 
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 @bot.on(events.NewMessage(pattern="/speed"))
 async def _(e):
@@ -108,18 +462,100 @@ async def _(e):
         return e.reply("**Sorry You're not An Authorised User!**")
     await test(e)
     
-    
+  def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
+  
 
 ########## Direct ###########
 
 @bot.on(events.NewMessage(pattern="/eval"))
 async def _(e):
     await eval(e)
+    
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 @bot.on(events.NewMessage(pattern="/bash"))
 async def _(e):
     await bash(e)
 
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 ######## Callbacks #########
 
@@ -146,6 +582,34 @@ async def _(event):
         os.system("rm thumb.jpg")
         await event.client.download_media(event.media, file="/bot/thumb.jpg")
         await event.reply("**Thumbnail Saved Successfully.**")
+    
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
 
 
 @bot.on(events.NewMessage(incoming=True))
