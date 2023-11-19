@@ -39,3 +39,31 @@ def checking_access(user_id, button=None):
             f'https://t.me/{bot_name}?start={token}'))
         return 'Token is expired, refresh your token and try again.', button
     return None, button
+    
+def is_token_expired(expire_time):
+    config_dict = {
+        'TOKEN_TIMEOUT': 3600  # Assuming TOKEN_TIMEOUT is set to 1 hour (3600 seconds)
+    }
+    # Check if TOKEN_TIMEOUT is not set, indicating that tokens never expire
+    if not config_dict['TOKEN_TIMEOUT']:
+        return False
+
+    # Calculate the time elapsed in seconds since the token's expiration time
+    elapsed_time = time() - expire_time
+
+    # Compare the elapsed time with the TOKEN_TIMEOUT value
+    if elapsed_time > config_dict['TOKEN_TIMEOUT']:
+        return True  # Token has expired
+    else:
+        return False  # Token is still valid
+        
+def is_valid_token_user(user_id):
+    if user_id in user_data:
+        # Retrieve the user's data from user_data dictionary
+        data = user_data[user_id]
+
+        # Check if the user has a token and if it is not expired
+        if 'token' in data and not is_token_expired(data.get('time', 0)):
+            return True  # User has a valid token
+
+    return False  # User does not have a valid token
