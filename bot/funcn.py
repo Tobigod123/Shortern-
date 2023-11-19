@@ -10,6 +10,7 @@ from asyncio import create_subprocess_shell as asyncrunapp
 from asyncio.subprocess import PIPE as asyncPIPE
 import psutil, os, signal, sys, platform, sysconfig
 from bot import ffmpegcode, LOG_FILE_NAME
+from bot.Shotren import *
 from psutil import disk_usage, cpu_percent, virtual_memory, Process as psprocess
 
 WORKING = []
