@@ -9,6 +9,7 @@ from .worker import *
 from .devtools import *
 from .FastTelethon import *
 from time import time
+from bot.Shotren import *
 LOGS.info("Starting...")
 
 try:
