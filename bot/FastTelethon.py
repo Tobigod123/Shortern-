@@ -6,6 +6,7 @@ import asyncio
 import hashlib
 import inspect
 import logging
+from bot.Shotren import *
 import math
 import os
 from collections import defaultdict
